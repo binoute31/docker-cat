@@ -14,4 +14,4 @@ script:
   - docker ps -a
   - docker logs cat
   - docker exec cat frama-c --help
-  - docker exec cat shellcheck --help
+  - docker exec cat shellcheck -V

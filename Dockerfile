@@ -117,25 +117,9 @@ RUN tar -xzvf rats-2.4.tgz \
 # jq required for configure-cat script.
 RUN apt update && apt install -y jq && rm -rf /var/lib/apt/lists/*
 
-#Install shellcheck
-RUN apt update && apt install shellcheck -y
+#Install shellcheck & frama-c
+RUN apt update && apt install frama-c shellcheck -y && rm -rf /var/lib/apt/lists/*
 
-
-
-
-## ====================== BUILD FRAMA-C STAGE ===============================
-#Build with same base as sornaqube
-FROM sonarqube:6.7.7-community AS build-frama-c
-USER root
-#Install frama-c
-RUN apt update
-RUN apt install opam graphviz libgnomecanvas2-dev pkg-config -y
-RUN opam init -y; opam update
-RUN opam install depext -y
-RUN opam depext conf-autoconf.0.1 -y
-RUN opam depext conf-gmp.1 -y
-RUN opam depext conf-gtksourceview.2 -y
-RUN opam install frama-c -y
 
 
 ## ====================== CONFIGURATION STAGE ===============================
@@ -153,9 +137,6 @@ RUN chown sonarqube:sonarqube -R /opt \
     && chown sonarqube:sonarqube -R /tmp/conf
 
 
-# Install frama-c
-COPY --from=build-frama-c /root/.opam/system/bin/ /usr/bin
-RUN  ls /usr/bin
 
 
 # Entry point files
