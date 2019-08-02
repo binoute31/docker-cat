@@ -13,5 +13,5 @@ script:
   - sleep 30
   - docker ps -a
   - docker logs cat
-  - docker exec cat frama-c --help
+  - docker exec cat frama-c -version
   - docker exec cat shellcheck -V

@@ -31,7 +31,6 @@ ADD https://github.com/checkstyle/sonar-checkstyle/releases/download/3.7/checkst
     https://binaries.sonarsource.com/Distribution/sonar-typescript-plugin/sonar-typescript-plugin-1.1.0.1079.jar \
     https://binaries.sonarsource.com/Distribution/sonar-web-plugin/sonar-web-plugin-2.5.0.476.jar \
     https://binaries.sonarsource.com/Distribution/sonar-xml-plugin/sonar-xml-plugin-1.4.3.1027.jar \
-    ## TMP: For dev -- switch to release when merged
     https://github.com/lequal/sonar-cnes-scan-plugin/releases/download/1.4.0/sonar-cnes-scan-plugin-1.4.jar \
     /opt/sonarqube/extensions/plugins/
 
@@ -63,7 +62,7 @@ USER root
 ADD https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.3.778-linux.zip \
     /tmp/scanners/
 
-RUN apt update && apt install -y unzip apt-utils && rm -rf /var/lib/apt/lists/* \
+RUN apt update && apt install -y unzip apt-utils \
     && unzip /tmp/scanners/sonar-scanner-cli-3.0.3.778-linux.zip -d /opt/ \
     && mv /opt/sonar-scanner-3.0.3.778-linux /opt/sonar-scanner \
     && rm -rf /tmp/scanners
@@ -81,7 +80,7 @@ ADD https://github.com/tartley/colorama/archive/v0.3.3.tar.gz \
     https://github.com/lequal/cnes-pylint-extension/archive/V1.0.tar.gz \
     /tmp/python/
 
-RUN apt update && apt install -y python-setuptools && rm -rf /var/lib/apt/lists/* \
+RUN apt update && apt install -y python-setuptools \
     && mkdir /opt/python \
     && find /tmp/python -maxdepth 1 -name \*.tar.gz -exec tar -xvzf {} -C /opt/python \; \
     && ls /opt/python \
@@ -96,7 +95,7 @@ RUN apt update && apt install -y python-setuptools && rm -rf /var/lib/apt/lists/
 # C and C++ tools installation
 WORKDIR /tmp
 ## CPPCheck, gcc, make, vera++
-RUN apt update && apt install -y cppcheck vera\+\+ gcc make && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y cppcheck vera\+\+ gcc make
 
 ## Expat, rats
 ADD http://downloads.sourceforge.net/project/expat/expat/2.0.1/expat-2.0.1.tar.gz /tmp/
@@ -115,10 +114,10 @@ RUN tar -xzvf rats-2.4.tgz \
     && rm -rf ./rats-2.4.tgz ./rats-2.4
 
 # jq required for configure-cat script.
-RUN apt update && apt install -y jq && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y jq
 
 #Install shellcheck & frama-c
-RUN apt update && apt install frama-c shellcheck -y && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install frama-c shellcheck -y
 
 
 
@@ -136,8 +135,8 @@ RUN chown sonarqube:sonarqube -R /opt \
     && ls -lrta /home/ \
     && chown sonarqube:sonarqube -R /tmp/conf
 
-
-
+# Clean apt
+RUN rm -rf /var/lib/apt/lists/*
 
 # Entry point files
 COPY ./configure-cat.bash /tmp/
