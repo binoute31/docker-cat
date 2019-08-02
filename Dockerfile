@@ -17,18 +17,18 @@ ADD https://github.com/checkstyle/sonar-checkstyle/releases/download/3.7/checkst
     https://github.com/lequal/sonar-frama-c-plugin/releases/download/V2.0.0/sonarframac-2.0.0.jar \
     https://github.com/galexandre/sonar-cobertura/releases/download/1.9.1/sonar-cobertura-plugin-1.9.1.jar \
     https://github.com/SonarSource/sonar-csharp/releases/download/6.1.0.2359/sonar-csharp-plugin-6.1.0.2359.jar \
-    https://github.com/SonarOpenCommunity/sonar-cxx/releases/download/cxx-0.9.7/sonar-cxx-plugin-0.9.7.jar \
+    https://github.com/SonarOpenCommunity/sonar-cxx/releases/download/cxx-1.1.0/sonar-cxx-plugin-1.1.0.jar \
     https://github.com/spotbugs/sonar-findbugs/releases/download/3.7.0/sonar-findbugs-plugin-3.7.0.jar \
-    https://binaries.sonarsource.com/Distribution/sonar-flex-plugin/sonar-flex-plugin-2.4.0.1222.jar \
+    https://binaries.sonarsource.com/Distribution/sonar-flex-plugin/sonar-flex-plugin-2.5.1.1831.jar \
     https://binaries.sonarsource.com/Distribution/sonar-java-plugin/sonar-java-plugin-5.4.0.14284.jar \
     https://binaries.sonarsource.com/Distribution/sonar-javascript-plugin/sonar-javascript-plugin-3.1.1.5128.jar \
     https://binaries.sonarsource.com/Distribution/sonar-php-plugin/sonar-php-plugin-2.10.0.2087.jar \
     https://binaries.sonarsource.com/Distribution/sonar-pmd-plugin/sonar-pmd-plugin-2.5.jar \
-    https://binaries.sonarsource.com/Distribution/sonar-python-plugin/sonar-python-plugin-1.8.0.1496.jar \
+    https://binaries.sonarsource.com/Distribution/sonar-python-plugin/sonar-python-plugin-1.14.0.3086.jar \
     https://github.com/willemsrb/sonar-rci-plugin/releases/download/sonar-rci-plugin-1.0.1/sonar-rci-plugin-1.0.1.jar \
-    https://binaries.sonarsource.com/Distribution/sonar-scm-git-plugin/sonar-scm-git-plugin-1.2.jar \
-    https://binaries.sonarsource.com/Distribution/sonar-scm-svn-plugin/sonar-scm-svn-plugin-1.4.0.522.jar \
-    https://binaries.sonarsource.com/Distribution/sonar-typescript-plugin/sonar-typescript-plugin-1.1.0.1079.jar \
+    https://binaries.sonarsource.com/Distribution/sonar-scm-git-plugin/sonar-scm-git-plugin-1.8.0.1574.jar \
+    https://binaries.sonarsource.com/Distribution/sonar-scm-svn-plugin/sonar-scm-svn-plugin-1.8.0.1168.jar \
+    https://binaries.sonarsource.com/Distribution/sonar-typescript-plugin/sonar-typescript-plugin-1.9.0.3766.jar \
     https://binaries.sonarsource.com/Distribution/sonar-web-plugin/sonar-web-plugin-2.5.0.476.jar \
     https://binaries.sonarsource.com/Distribution/sonar-xml-plugin/sonar-xml-plugin-1.4.3.1027.jar \
     https://github.com/lequal/sonar-cnes-scan-plugin/releases/download/1.4.0/sonar-cnes-scan-plugin-1.4.jar \
@@ -58,11 +58,13 @@ ENV PATH $PATH:/opt/sonar-scanner
 ENV HOME /opt/sonarqube
 USER root
 
+RUN apt update
+
 # Sonar scanner installation
 ADD https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.3.778-linux.zip \
     /tmp/scanners/
 
-RUN apt update && apt install -y unzip apt-utils \
+RUN apt install -y unzip apt-utils sudo \
     && unzip /tmp/scanners/sonar-scanner-cli-3.0.3.778-linux.zip -d /opt/ \
     && mv /opt/sonar-scanner-3.0.3.778-linux /opt/sonar-scanner \
     && rm -rf /tmp/scanners
@@ -80,7 +82,7 @@ ADD https://github.com/tartley/colorama/archive/v0.3.3.tar.gz \
     https://github.com/lequal/cnes-pylint-extension/archive/V1.0.tar.gz \
     /tmp/python/
 
-RUN apt update && apt install -y python-setuptools \
+RUN apt install -y python-setuptools \
     && mkdir /opt/python \
     && find /tmp/python -maxdepth 1 -name \*.tar.gz -exec tar -xvzf {} -C /opt/python \; \
     && ls /opt/python \
@@ -95,7 +97,7 @@ RUN apt update && apt install -y python-setuptools \
 # C and C++ tools installation
 WORKDIR /tmp
 ## CPPCheck, gcc, make, vera++
-RUN apt update && apt install -y cppcheck vera\+\+ gcc make
+RUN apt install -y cppcheck vera\+\+ gcc make
 
 ## Expat, rats
 ADD http://downloads.sourceforge.net/project/expat/expat/2.0.1/expat-2.0.1.tar.gz /tmp/
@@ -113,11 +115,10 @@ RUN tar -xzvf rats-2.4.tgz \
     && cd .. \
     && rm -rf ./rats-2.4.tgz ./rats-2.4
 
-# jq required for configure-cat script.
-RUN apt update && apt install -y jq
 
+# jq required for configure-cat script.
 #Install shellcheck & frama-c
-RUN apt update && apt install frama-c shellcheck -y
+RUN apt install jq frama-c shellcheck -y
 
 
 
@@ -143,6 +144,6 @@ COPY ./configure-cat.bash /tmp/
 COPY ./init.bash /tmp/
 RUN chmod 750 /tmp/init.bash
 WORKDIR $SONARQUBE_HOME
-RUN chown sonarqube:sonarqube /tmp/init.bash
-USER sonarqube
+#RUN chown sonarqube:sonarqube /tmp/init.bash
+#USER sonarqube
 ENTRYPOINT ["/tmp/init.bash"]
