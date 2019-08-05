@@ -13,7 +13,7 @@ ADD https://github.com/checkstyle/sonar-checkstyle/releases/download/3.7/checkst
     https://github.com/lequal/sonar-cnes-export-plugin/releases/download/v1.1.0/sonar-cnes-export-plugin-1.1.jar \
     https://github.com/lequal/sonar-cnes-python-plugin/releases/download/1.1/sonar-cnes-python-plugin-1.1.jar \
     https://github.com/lequal/sonar-icode-cnes-plugin/releases/download/1.1.0/sonaricode-1.1.0.jar \
-    https://github.com/lequal/sonar-frama-c-plugin/releases/download/V2.0.0/sonarframac-2.0.0.jar \
+    #?https://github.com/lequal/sonar-frama-c-plugin/releases/download/V2.0.0/sonarframac-2.0.0.jar \
     https://github.com/galexandre/sonar-cobertura/releases/download/1.9.1/sonar-cobertura-plugin-1.9.1.jar \
     https://github.com/SonarSource/sonar-csharp/releases/download/6.1.0.2359/sonar-csharp-plugin-6.1.0.2359.jar \
     https://github.com/SonarOpenCommunity/sonar-cxx/releases/download/cxx-1.1.0/sonar-cxx-plugin-1.1.0.jar \
@@ -113,7 +113,8 @@ RUN tar -xzvf rats-2.4.tgz \
 
 # jq required for configure-cat script.
 #Install shellcheck & frama-c
-RUN apt install jq frama-c shellcheck -y
+#RUN apt install jq frama-c shellcheck -y
+RUN apt install jq shellcheck -y
 
 
 
