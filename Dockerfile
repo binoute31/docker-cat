@@ -1,10 +1,10 @@
 ## ====================== DOWNLOAD DEPENDENCIES STAGE ===============================
 
-FROM sonarqube:6.7.7-community AS download-stage
+FROM sonarqube:6.7.4 AS download-stage
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
 ENV PATH $PATH:/opt/sonar-scanner
 ENV HOME /opt/sonarqube
-USER root
+##USER root
 RUN mkdir /opt/sonar
 COPY ./conf /tmp/conf
 
@@ -56,7 +56,7 @@ FROM download-stage AS apt-stage
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
 ENV PATH $PATH:/opt/sonar-scanner
 ENV HOME /opt/sonarqube
-USER root
+#USER root
 
 RUN apt update
 
@@ -128,7 +128,7 @@ FROM apt-stage AS final-configuration-stage
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
 ENV PATH $PATH:/opt/sonar-scanner
 ENV HOME /opt/sonarqube
-USER root
+#USER root
 # Make sonarqube owner of it's installation directories
 RUN chown sonarqube:sonarqube -R /opt \
     && ls -lrta /opt/ \
