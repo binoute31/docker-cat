@@ -136,6 +136,5 @@ COPY ./configure-cat.bash /tmp/
 COPY ./init.bash /tmp/
 RUN chmod 750 /tmp/init.bash
 WORKDIR $SONARQUBE_HOME
-#RUN chown sonarqube:sonarqube /tmp/init.bash
-#USER sonarqube
+RUN ln -s /opt/sonarqube/extensions/plugins/ /opt/sonar/extensions/plugins
 ENTRYPOINT ["/tmp/init.bash"]
