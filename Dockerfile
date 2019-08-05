@@ -4,7 +4,6 @@ FROM sonarqube:6.7.4 AS download-stage
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
 ENV PATH $PATH:/opt/sonar-scanner
 ENV HOME /opt/sonarqube
-##USER root
 RUN mkdir /opt/sonar
 COPY ./conf /tmp/conf
 
@@ -53,10 +52,6 @@ RUN rm /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip
 ## ====================== APT / INSTALLATIONS STAGE ===============================
 
 FROM download-stage AS apt-stage
-ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
-ENV PATH $PATH:/opt/sonar-scanner
-ENV HOME /opt/sonarqube
-#USER root
 
 RUN apt update
 
@@ -125,10 +120,7 @@ RUN apt install jq frama-c shellcheck -y
 ## ====================== CONFIGURATION STAGE ===============================
 
 FROM apt-stage AS final-configuration-stage
-ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
-ENV PATH $PATH:/opt/sonar-scanner
-ENV HOME /opt/sonarqube
-#USER root
+
 # Make sonarqube owner of it's installation directories
 RUN chown sonarqube:sonarqube -R /opt \
     && ls -lrta /opt/ \
