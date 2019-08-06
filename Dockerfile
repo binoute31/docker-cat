@@ -89,15 +89,15 @@ RUN mkdir /opt/python \
 WORKDIR /tmp
 
 ## Expat, rats
-ADD http://downloads.sourceforge.net/project/expat/expat/2.0.1/expat-2.0.1.tar.gz /tmp/
+ADD https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rough-auditing-tool-for-security/rats-2.4.tgz \
+    http://downloads.sourceforge.net/project/expat/expat/2.0.1/expat-2.0.1.tar.gz\
+    /tmp/
 RUN tar -xvzf expat-2.0.1.tar.gz \
     && cd expat-2.0.1 \
     && ./configure && make && make install \
     && cd .. \
-    && rm -rf ./expat-2.0.1.tar.gz ./expat-2.0.1
-
-ADD https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rough-auditing-tool-for-security/rats-2.4.tgz /tmp/
-RUN tar -xzvf rats-2.4.tgz \
+    && rm -rf ./expat-2.0.1.tar.gz ./expat-2.0.1 \
+    && tar -xzvf rats-2.4.tgz \
     && cd rats-2.4 \
     && ./configure --with-expat-lib=/usr/local/lib && make && make install \
     && ./rats \
@@ -111,18 +111,21 @@ RUN tar -xzvf rats-2.4.tgz \
 
 FROM download-stage AS final-configuration-stage
 
+
+
+# Entry point files
+COPY ./configure-cat.bash /tmp/
+COPY ./init.bash /tmp/
+
 # Make sonarqube owner of it's installation directories
 RUN chown sonarqube:sonarqube -R /opt \
+    && chmod 750 /tmp/init.bash \
     && ls -lrta /opt/ \
     && chown sonarqube:sonarqube -R /home \
     && ls -lrta /home/ \
     && chown sonarqube:sonarqube -R /tmp/conf \
     && rm -rf /var/lib/apt/lists/*
 
-# Entry point files
-COPY ./configure-cat.bash /tmp/
-COPY ./init.bash /tmp/
-RUN chmod 750 /tmp/init.bash
 WORKDIR $SONARQUBE_HOME
 RUN ln -s /opt/sonarqube/extensions/plugins/ /opt/sonar/extensions/plugins
 ENTRYPOINT ["/tmp/init.bash"]
