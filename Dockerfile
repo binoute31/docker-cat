@@ -45,22 +45,19 @@ ADD https://github.com/lequal/sonar-cnes-report/releases/download/2.2.0/issues-t
 
 # I-Code
 ADD https://github.com/lequal/i-CodeCNES/releases/download/v3.1.0/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip /tmp
-RUN unzip /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip -d /tmp;chmod +x /tmp/icode/icode;mv /tmp/icode/* /usr/bin
-RUN rm -r /tmp/icode
-RUN rm /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip
+RUN unzip /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip -d /tmp;chmod +x /tmp/icode/icode;mv /tmp/icode/* /usr/bin && \
+    rm -r /tmp/icode && \
+    rm /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip
 
-## ====================== APT / INSTALLATIONS STAGE ===============================
 
-FROM download-stage AS apt-stage
-
-RUN apt update
+# jq required for configure-cat script.
+RUN apt update && apt install unzip python-setuptools cppcheck vera\+\+ gcc make jq shellcheck -y
 
 # Sonar scanner installation
 ADD https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.3.778-linux.zip \
     /tmp/scanners/
 
-RUN apt install -y unzip apt-utils sudo \
-    && unzip /tmp/scanners/sonar-scanner-cli-3.0.3.778-linux.zip -d /opt/ \
+RUN unzip /tmp/scanners/sonar-scanner-cli-3.0.3.778-linux.zip -d /opt/ \
     && mv /opt/sonar-scanner-3.0.3.778-linux /opt/sonar-scanner \
     && rm -rf /tmp/scanners
 
@@ -77,8 +74,7 @@ ADD https://github.com/tartley/colorama/archive/v0.3.3.tar.gz \
     https://github.com/lequal/cnes-pylint-extension/archive/V1.0.tar.gz \
     /tmp/python/
 
-RUN apt install -y python-setuptools \
-    && mkdir /opt/python \
+RUN mkdir /opt/python \
     && find /tmp/python -maxdepth 1 -name \*.tar.gz -exec tar -xvzf {} -C /opt/python \; \
     && ls /opt/python \
     && cd /opt/python/colorama-0.3.3/ && python setup.py install \
@@ -91,8 +87,6 @@ RUN apt install -y python-setuptools \
 
 # C and C++ tools installation
 WORKDIR /tmp
-## CPPCheck, gcc, make, vera++
-RUN apt install -y cppcheck vera\+\+ gcc make
 
 ## Expat, rats
 ADD http://downloads.sourceforge.net/project/expat/expat/2.0.1/expat-2.0.1.tar.gz /tmp/
@@ -111,11 +105,6 @@ RUN tar -xzvf rats-2.4.tgz \
     && rm -rf ./rats-2.4.tgz ./rats-2.4
 
 
-# jq required for configure-cat script.
-#Install shellcheck & frama-c
-#RUN apt install jq frama-c shellcheck -y
-RUN apt install jq shellcheck -y
-
 
 
 ## ====================== CONFIGURATION STAGE ===============================
@@ -127,10 +116,8 @@ RUN chown sonarqube:sonarqube -R /opt \
     && ls -lrta /opt/ \
     && chown sonarqube:sonarqube -R /home \
     && ls -lrta /home/ \
-    && chown sonarqube:sonarqube -R /tmp/conf
-
-# Clean apt
-RUN rm -rf /var/lib/apt/lists/*
+    && chown sonarqube:sonarqube -R /tmp/conf \
+    && rm -rf /var/lib/apt/lists/*
 
 # Entry point files
 COPY ./configure-cat.bash /tmp/
