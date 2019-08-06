@@ -42,9 +42,13 @@ ADD https://github.com/lequal/sonar-cnes-report/releases/download/2.2.0/issues-t
     https://github.com/lequal/sonar-cnes-report/releases/download/2.2.0/code-analysis-template.docx \
     /opt/sonar/extensions/cnes/
 
+# Download softwares
+ADD https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rough-auditing-tool-for-security/rats-2.4.tgz \
+    http://downloads.sourceforge.net/project/expat/expat/2.0.1/expat-2.0.1.tar.gz \
+    https://github.com/lequal/i-CodeCNES/releases/download/v3.1.0/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip \
+    /tmp/
 
 # I-Code
-ADD https://github.com/lequal/i-CodeCNES/releases/download/v3.1.0/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip /tmp
 RUN unzip /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip -d /tmp;chmod +x /tmp/icode/icode;mv /tmp/icode/* /usr/bin && \
     rm -r /tmp/icode && \
     rm /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip
@@ -89,9 +93,7 @@ RUN mkdir /opt/python \
 WORKDIR /tmp
 
 ## Expat, rats
-ADD https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rough-auditing-tool-for-security/rats-2.4.tgz \
-    http://downloads.sourceforge.net/project/expat/expat/2.0.1/expat-2.0.1.tar.gz\
-    /tmp/
+
 RUN tar -xvzf expat-2.0.1.tar.gz \
     && cd expat-2.0.1 \
     && ./configure && make && make install \
@@ -109,7 +111,7 @@ RUN tar -xvzf expat-2.0.1.tar.gz \
 
 ## ====================== CONFIGURATION STAGE ===============================
 
-FROM download-stage AS final-configuration-stage
+FROM download-stage AS configuration-stage
 
 
 
@@ -119,8 +121,8 @@ COPY ./init.bash /tmp/
 
 # Make sonarqube owner of it's installation directories
 RUN chown sonarqube:sonarqube -R /opt \
-    && chmod 750 /tmp/init.bash \
     && ls -lrta /opt/ \
+    && chmod 750 /tmp/init.bash \
     && chown sonarqube:sonarqube -R /home \
     && ls -lrta /home/ \
     && chown sonarqube:sonarqube -R /tmp/conf \
