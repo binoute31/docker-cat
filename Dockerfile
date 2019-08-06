@@ -109,7 +109,7 @@ RUN tar -xzvf rats-2.4.tgz \
 
 ## ====================== CONFIGURATION STAGE ===============================
 
-FROM apt-stage AS final-configuration-stage
+FROM download-stage AS final-configuration-stage
 
 # Make sonarqube owner of it's installation directories
 RUN chown sonarqube:sonarqube -R /opt \
