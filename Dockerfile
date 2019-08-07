@@ -1,6 +1,6 @@
 ## ====================== DOWNLOAD DEPENDENCIES STAGE ===============================
 
-FROM sonarqube:6.7.4 AS download-stage
+FROM sonarqube:6.7.5-alpine AS download-stage
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
 ENV PATH $PATH:/opt/sonar-scanner
 ENV HOME /opt/sonarqube
@@ -119,8 +119,8 @@ RUN chown sonarqube:sonarqube -R /opt \
     && chmod 750 /tmp/init.bash \
     && chown sonarqube:sonarqube -R /home \
     && ls -lrta /home/ \
-    && chown sonarqube:sonarqube -R /tmp/conf
+    && chown sonarqube:sonarqube -R /tmp/conf \
+    && ln -s /opt/sonarqube/extensions/plugins/ /opt/sonar/extensions/plugins
 
 WORKDIR $SONARQUBE_HOME
-RUN ln -s /opt/sonarqube/extensions/plugins/ /opt/sonar/extensions/plugins
 ENTRYPOINT ["/tmp/init.bash"]
