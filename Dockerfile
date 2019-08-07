@@ -94,7 +94,7 @@ WORKDIR /tmp
 
 ## Expat, rats
 
-RUN tar -xvzf expat-2.0.1.tar.gz \
+RUN cd /tmp && tar -xvzf expat-2.0.1.tar.gz \
     && cd expat-2.0.1 \
     && ./configure && make && make install \
     && cd .. \
