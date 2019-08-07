@@ -1,6 +1,6 @@
 ## ====================== DOWNLOAD DEPENDENCIES STAGE ===============================
 
-FROM sonarqube:6.7.5-alpine AS download-stage
+FROM sonarqube:6.7.4 AS download-stage
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
 ENV PATH $PATH:/opt/sonar-scanner
 ENV HOME /opt/sonarqube
@@ -66,8 +66,8 @@ ADD https://github.com/tartley/colorama/archive/v0.3.3.tar.gz \
     /tmp/python/
 
 
-RUN apk update && apk add unzip python-setuptools cppcheck vera\+\+ gcc make jq shellcheck -y\
-    #&& rm -rf /var/lib/apt/lists/* \
+RUN apt update && apt install unzip python-setuptools cppcheck vera\+\+ gcc make jq shellcheck -y\
+    && rm -rf /var/lib/apt/lists/* \
     #Install i-code
     && unzip /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip -d /tmp;chmod +x /tmp/icode/icode;mv /tmp/icode/* /usr/bin \
     && rm -r /tmp/icode \
