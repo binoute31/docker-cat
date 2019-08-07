@@ -55,7 +55,7 @@ RUN unzip /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip -d /tmp;chmod +x /tmp/i
 
 
 # jq required for configure-cat script.
-RUN apt update && apt install unzip python-setuptools cppcheck vera\+\+ gcc make jq shellcheck -y --no-install-recommends
+RUN apt update && apt install unzip python-setuptools cppcheck vera\+\+ gcc make jq shellcheck -y
 
 # Sonar scanner installation
 ADD https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.3.778-linux.zip \
