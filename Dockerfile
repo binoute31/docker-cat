@@ -48,22 +48,9 @@ ADD https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.
     https://github.com/lequal/i-CodeCNES/releases/download/v3.1.0/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip \
     /tmp/
 
-# I-Code
-RUN unzip /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip -d /tmp;chmod +x /tmp/icode/icode;mv /tmp/icode/* /usr/bin && \
-    rm -r /tmp/icode && \
-    rm /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip
-
-
-# jq required for configure-cat script.
-RUN apt update && apt install unzip python-setuptools cppcheck vera\+\+ gcc make jq shellcheck -y
-
 # Sonar scanner installation
 ADD https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.3.778-linux.zip \
     /tmp/scanners/
-
-RUN unzip /tmp/scanners/sonar-scanner-cli-3.0.3.778-linux.zip -d /opt/ \
-    && mv /opt/sonar-scanner-3.0.3.778-linux /opt/sonar-scanner \
-    && rm -rf /tmp/scanners
 
 
 # Python, Pylint and CNES pylint setup
@@ -78,7 +65,19 @@ ADD https://github.com/tartley/colorama/archive/v0.3.3.tar.gz \
     https://github.com/lequal/cnes-pylint-extension/archive/V1.0.tar.gz \
     /tmp/python/
 
-RUN mkdir /opt/python \
+
+RUN apt update && apt install unzip python-setuptools cppcheck vera\+\+ gcc make jq shellcheck -y\
+    && rm -rf /var/lib/apt/lists/* \
+    #Install i-code
+    && unzip /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip -d /tmp;chmod +x /tmp/icode/icode;mv /tmp/icode/* /usr/bin \
+    && rm -r /tmp/icode \
+    && rm /tmp/i-CodeCNES-3.1.0-CLI-linux.gtk.x86_64.zip \
+    ## Install sonar scanner
+    && unzip /tmp/scanners/sonar-scanner-cli-3.0.3.778-linux.zip -d /opt/ \
+    && mv /opt/sonar-scanner-3.0.3.778-linux /opt/sonar-scanner \
+    && rm -rf /tmp/scanners \
+    ## Python, Pylin et CNES pylint setup
+    && mkdir /opt/python \
     && find /tmp/python -maxdepth 1 -name \*.tar.gz -exec tar -xvzf {} -C /opt/python \; \
     && ls /opt/python \
     && cd /opt/python/colorama-0.3.3/ && python setup.py install \
@@ -87,14 +86,9 @@ RUN mkdir /opt/python \
     && cd /opt/python/wrapt-1.10.5/ && python setup.py install \
     && cd /opt/python/astroid-astroid-1.4.9/ && python setup.py install \
     && cd /opt/python/pylint-pylint-1.5/ && python setup.py install \
-    && rm -rf /tmp/python
-
-# C and C++ tools installation
-WORKDIR /tmp
-
-## Expat, rats
-
-RUN cd /tmp && tar -xvzf expat-2.0.1.tar.gz \
+    && rm -rf /tmp/python \
+    ## C and C++ tools installation
+    && cd /tmp && tar -xvzf expat-2.0.1.tar.gz \
     && cd expat-2.0.1 \
     && ./configure && make && make install \
     && cd .. \
@@ -125,8 +119,7 @@ RUN chown sonarqube:sonarqube -R /opt \
     && chmod 750 /tmp/init.bash \
     && chown sonarqube:sonarqube -R /home \
     && ls -lrta /home/ \
-    && chown sonarqube:sonarqube -R /tmp/conf \
-    && rm -rf /var/lib/apt/lists/*
+    && chown sonarqube:sonarqube -R /tmp/conf
 
 WORKDIR $SONARQUBE_HOME
 RUN ln -s /opt/sonarqube/extensions/plugins/ /opt/sonar/extensions/plugins
