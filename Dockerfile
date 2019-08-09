@@ -1,6 +1,6 @@
 ## ====================== DOWNLOAD DEPENDENCIES STAGE ===============================
 
-FROM sonarqube:6.7.4 AS download-stage
+FROM sonarqube:7.9.1-community AS download-stage
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
 ENV PATH $PATH:/opt/sonar-scanner
 ENV HOME /opt/sonarqube
